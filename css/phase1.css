@@ -65,12 +65,6 @@
 #app-shell .tab-content h2 {font-size:1.25rem;line-height:1.4;}
 /* Higher specificity also contains the Pop theme's large page headings. */
 html[data-palette] #app-shell .tab-content h2.text-2xl {font-size:1.25rem;}
-#app-shell #home-date {font-size:1.25rem;line-height:1.4;}
-#app-shell #balance-hero h2 {font-size:2rem;justify-content:flex-end;}
-#app-shell #home-today-balance {font-size:clamp(2rem,10vw,3.25rem);font-variant-numeric:tabular-nums;}
-#app-shell #balance-hero > .text-center {text-align:left;}
-#app-shell #balance-hero h2 > span:first-child {font-size:1.25rem;}
-#app-shell #balance-hero .w-1\/2 p:first-child {text-align:left;}
 #app-shell .tab-content :is(.shadow-sleek,.neo-card):is(.p-5,.p-6) {padding:var(--app-card-pad);}
 #app-shell .tab-content :is(.mb-5,.mb-6) {margin-bottom:var(--app-section-gap);}
 #app-shell .tab-content .grid-cols-2 {grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:.75rem;}
@@ -104,4 +98,57 @@ html[data-palette] #app-shell .tab-content h2.text-2xl {font-size:1.25rem;}
  #app-shell .tab-content h2,html[data-palette] #app-shell .tab-content h2.text-2xl,#app-shell #home-date {font-size:1.125rem;}
  #app-shell #install-app-card {flex-wrap:wrap;}
  #app-shell #palette-settings .palette-options {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+
+/* Home component layout: keep table alignment and other tabs outside these rules. */
+#app-shell #tab-home #balance-hero {padding:16px var(--app-gutter) 28px;}
+#app-shell #tab-home .home-header {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:start;margin-bottom:16px;}
+#app-shell #tab-home .home-header > div {min-width:0;}
+#app-shell #tab-home .home-header > div:first-child > p {font-size:.625rem;line-height:1.4;letter-spacing:.06em;}
+#app-shell #tab-home #home-date {font-size:clamp(.75rem,3.35vw,.875rem);line-height:1.45;overflow-wrap:normal;}
+#app-shell #tab-home .home-month-summary {max-width:96px;padding:4px 6px;text-align:right;}
+#app-shell #tab-home .home-month-summary p {font-size:.625rem;line-height:1.35;letter-spacing:0;}
+#app-shell #tab-home .home-month-summary p:nth-child(2) {font-size:.75rem;}
+#app-shell #tab-home #pay-cycle-range {font-size:.5625rem;}
+#app-shell #tab-home .home-balance {text-align:center;}
+#app-shell #tab-home .home-balance > p {font-size:.8125rem;margin-bottom:4px;text-align:center;}
+#app-shell #tab-home .home-balance h2 {display:flex;justify-content:center;align-items:baseline;gap:4px;flex-wrap:wrap;margin:0 0 16px;line-height:1.15;text-align:center;}
+#app-shell #tab-home .home-balance h2 > span:first-child {font-size:1.125rem;margin:0;}
+#app-shell #tab-home #home-today-balance {font-size:clamp(2rem,10vw,2.75rem);font-variant-numeric:tabular-nums;min-width:0;max-width:100%;overflow-wrap:anywhere;}
+#app-shell #tab-home .home-daily-summary {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:10px 12px;gap:0;}
+#app-shell #tab-home .home-daily-summary > div {width:auto;min-width:0;}
+#app-shell #tab-home .home-daily-summary > div:first-child {padding-right:10px;}
+#app-shell #tab-home .home-daily-summary > div:last-child {padding-left:10px;}
+#app-shell #tab-home .home-daily-summary > div:first-child p {text-align:left;}
+#app-shell #tab-home .home-daily-summary > div:last-child p {text-align:right;}
+#app-shell #tab-home .home-daily-summary p {font-size:.875rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+#app-shell #tab-home .home-daily-summary p:first-child {font-size:.625rem;letter-spacing:.04em;}
+#app-shell #tab-home .daily-meter {margin-top:10px;padding:0;}
+#app-shell #tab-home .daily-meter-label {font-size:.625rem;gap:8px;margin-bottom:6px;}
+#app-shell #tab-home .daily-meter-label > span:first-child {text-align:left;}
+#app-shell #tab-home .daily-meter-label > span:last-child {text-align:right;}
+#app-shell #tab-home .home-cards {padding:0 var(--app-gutter);margin-top:-12px;}
+#app-shell #tab-home .home-cards > :is(.shadow-sleek,.neo-card),
+#app-shell #tab-home #home-feature-widgets > div {padding:12px;margin-bottom:12px;}
+#app-shell #tab-home .home-cards h3 {font-size:.75rem;line-height:1.4;}
+#app-shell #tab-home .home-cards > div:first-child > div:first-child {margin-bottom:8px;padding:0;gap:4px;}
+#app-shell #tab-home .home-cards button,
+#app-shell #tab-home [onclick="toggleCalendarView()"] {min-width:44px;min-height:44px;}
+#app-shell #tab-home [onclick="toggleCalendarView()"] {padding:4px 8px;}
+#app-shell #tab-home #calendar-month-year {font-size:.6875rem;letter-spacing:.025em;}
+#app-shell #tab-home .grid-cols-7 > .font-bold {font-size:.625rem;}
+#app-shell #tab-home .home-cards > div:first-child > .grid-cols-7 {margin-bottom:6px;}
+#app-shell #tab-home #weekly-trend-expand-btn {flex-shrink:0;order:-1;margin-right:6px;}
+#app-shell #tab-home .home-cards > .neo-card > .flex {justify-content:flex-start;}
+#app-shell #tab-home .home-cards > .neo-card > .flex > .flex {min-width:0;gap:6px;}
+#app-shell #tab-home #weekly-trend-details button {font-size:.625rem;}
+#app-shell > nav .nav-item {min-width:44px;min-height:44px;}
+#app-shell > nav .nav-item > span:last-child {font-size:.5625rem;}
+#app-shell #floating-chat-btn {width:44px;height:44px;border-radius:50%;bottom:calc(172px + env(safe-area-inset-bottom));}
+@media(max-width:340px) {
+ #app-shell #tab-home {--app-gutter:.75rem;}
+ #app-shell #tab-home .home-header {gap:6px;}
+ #app-shell #tab-home #home-date {font-size:.75rem;}
+ #app-shell #tab-home .home-month-summary {max-width:84px;}
+ #app-shell #tab-home .home-cards h3 {font-size:.6875rem;letter-spacing:.025em;}
 }

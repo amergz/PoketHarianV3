@@ -499,19 +499,19 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
             <div id="balance-hero" class="bg-gradient-to-br from-indigo-600 to-violet-700 dark:from-indigo-900 dark:to-slate-800 rounded-b-[2.5rem] p-7 pb-12 shadow-lg relative overflow-hidden text-white">
                 <div class="absolute -top-20 -right-20 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
                 
-                <div class="flex justify-between items-center mb-6 relative z-10">
+                <div class="home-header flex justify-between items-center mb-6 relative z-10">
                     <div>
                         <p class="text-indigo-200 text-xs font-medium uppercase tracking-wider mb-0.5">POKET HARIAN</p>
                         <h1 class="text-xl font-bold" id="home-date">Hari Ini</h1>
                     </div>
-                    <div class="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-right">
+                    <div class="home-month-summary bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-right">
                         <p class="text-[9px] uppercase tracking-wider text-indigo-100">Baki Bulan</p>
                         <p class="text-sm font-bold"><span id="days-remaining-count">0</span> Hari</p>
                         <p class="text-[8px] text-indigo-200 mt-0.5" id="pay-cycle-range"></p>
                     </div>
                 </div>
 
-                <div class="text-center relative z-10">
+                <div class="home-balance text-center relative z-10">
                     <p class="text-sm text-indigo-100 font-medium mb-1">Baki Belanja Hari Ini</p>
                     <h2 class="text-5xl font-bold tracking-tight mb-6 flex justify-center items-start">
                         <span class="text-2xl mt-1 mr-1 text-indigo-200 font-medium">RM</span>
@@ -527,7 +527,7 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
                     <ul id="payday-notification-list" class="space-y-1.5"></ul>
                 </div>
 
-                <div class="flex justify-between items-center bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 relative z-10">
+                <div class="home-daily-summary flex justify-between items-center bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/10 relative z-10">
                     <div class="w-1/2 border-r border-white/10">
                         <p class="text-[10px] text-indigo-200 uppercase tracking-wider">Limit Harian</p>
                         <p class="font-bold text-sm">RM <span id="home-daily-limit">0.00</span></p>
@@ -540,7 +540,7 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
             </div>
 
             <!-- Kalendar & Transaksi Pilihan -->
-            <div class="p-6 -mt-6 relative z-20">
+            <div class="home-cards p-6 -mt-6 relative z-20">
 
                 <!-- Kalendar Interaktif -->
                 <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-sleek p-5 mb-6 border border-slate-100 dark:border-slate-700/50">
@@ -1984,7 +1984,7 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
         <!-- ========================================== -->
         <button type="button" id="floating-chat-btn" aria-label="Buka Chat AI — Mod Demo" aria-controls="chat-panel" title="Chat AI — Mod Demo">
             <i class="fas fa-comment-dots" aria-hidden="true"></i>
-            <span>Chat AI</span>
+            <span class="chat-sr-only">Chat AI</span>
         </button>
         <button id="floating-add-btn" aria-label="Tambah transaksi" title="Tambah transaksi" onclick="prepareNewTx()"
             class="fixed bottom-24 right-5 w-14 h-14 bg-gradient-to-tr from-indigo-600 to-violet-500 rounded-full flex items-center justify-center text-white text-2xl shadow-glow transform transition hover:scale-105 active:scale-95 z-40">
@@ -2163,7 +2163,12 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
 
         // Setup Header Date
         const todayStrLocal = new Date().toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        document.getElementById('home-date').innerText = todayStrLocal;
+        const homeDate = document.getElementById('home-date');
+        const shortHomeDate = new Date().toLocaleDateString('ms-MY', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+        const compactHomeDate = window.matchMedia('(max-width: 340px)');
+        const renderHomeDate = () => { homeDate.innerText = compactHomeDate.matches ? shortHomeDate : todayStrLocal; };
+        renderHomeDate();
+        compactHomeDate.addEventListener('change', renderHomeDate);
 
 
         // --- DATA MANAGEMENT (BACKUP & RESTORE) ---

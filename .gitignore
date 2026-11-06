@@ -1,0 +1,14 @@
+.env
+.env.*
+!.env.example
+backups/
+test-results/
+
+*.log
+logs/
+secrets/
+*backup*.json
+*Backup*.json
+qa-private/
+
+tests/live-*.cjs
