@@ -42,3 +42,12 @@
 
 .chat-bubble:has(.chat-post-scroll) {max-width:100%;min-width:0;box-sizing:border-box;}
 #receipt-preview {padding:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}#receipt-preview[hidden]{display:none}#receipt-thumb{width:64px;height:80px;object-fit:contain}#receipt-attach,#receipt-remove{min-width:44px;min-height:44px}#receipt-preview small{font-size:12px;width:100%}
+
+/* Reply typography only; composer and controls retain their existing sizes. */
+#chat-panel .chat-assistant{font-size:.875rem;line-height:1.5;white-space:normal;box-sizing:border-box;}
+#chat-panel .chat-assistant p{font-size:.875rem;white-space:pre-wrap;}
+#chat-panel .chat-assistant table{font-size:.8125rem;width:100%;table-layout:fixed;}
+#chat-panel .chat-assistant:has(table){width:100%;max-width:100%;padding:12px 6px;}
+#chat-panel .chat-assistant .chat-post-table th,#chat-panel .chat-assistant .chat-post-table td{width:20%;padding:6px 2px;overflow-wrap:anywhere;white-space:normal;}
+#chat-panel .chat-assistant .chat-items-table th,#chat-panel .chat-assistant .chat-items-table td{width:35%;padding:6px 2px;white-space:normal;overflow-wrap:anywhere;text-align:left;}
+#chat-panel .chat-assistant .chat-items-table th:last-child,#chat-panel .chat-assistant .chat-items-table td:last-child{width:30%;text-align:right;font-variant-numeric:tabular-nums;}

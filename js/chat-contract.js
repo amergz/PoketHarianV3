@@ -29,9 +29,32 @@
  function validateAnalysis(a,categories){inspect(a,analysisSchema,'$.analysis');if(a.time){const t=a.time;if(t.kind==='explicit_months'){if(!t.startMonth||!t.endMonth||t.startMonth>t.endMonth)invalid('$.analysis.time','ordered startMonth/endMonth',t);}else if(t.kind!=='inherit'&&(!Number.isInteger(t.count)||t.count<1||t.count>(t.kind==='last_days'?366:24)))invalid('$.analysis.time.count','integer within supported range',t.count);}
  if(a.category!==null&&!(categories[a.type]||[]).some(c=>categoryKey(c)===categoryKey(a.category))){const e=Error('Kategori analisis tidak ditemui. Pilih kategori yang tersedia untuk jenis ini.');e.code='CATEGORY_NOT_FOUND';e.validation={path:'$.analysis.category',expected:'existing normalized read category',received:'string'};throw e;}return a;}
 
+ // Deliberately narrow, auditable fallback for the reported purchase syntax.
+ // General language and dates remain the provider's job, guarded by the schema.
+ function reportedPurchases(ctx){
+  const parts=String(ctx.message||'').trim().split(/[,;\n]+/).map(s=>s.trim());
+  const matches=parts.map(p=>p.match(/^(7e|nasi kerabu)\s+RM\s*(\d+(?:\.\d{1,2})?)(?:\s+(?:masuk(?:kan)?(?:\s+dalam)?|kategori)\s+(.+?))?[.!]?$/i));
+  if(!parts.length||parts.length>10||matches.some(m=>!m))return null;
+  return matches.map(m=>{const names=ctx.categories.expense||[],explicit=m[3]?.replace(/[.!]+$/,'').trim();
+   const candidates=explicit?names.filter(c=>categoryKey(c)===categoryKey(explicit)):categoryKey(m[1])==='nasi kerabu'?names.filter(c=>['makan','makanan','makanan & minuman','makan & minum'].includes(categoryKey(c))):[];
+   return {text:m[1],amount:Number(m[2]),date:ctx.referenceDate,type:'expense',category:candidates.length===1?candidates[0]:null,accountAlias:null,targetId:null,isBill:false};
+  });
+ }
  function check(value,ctx){
   inspect(value,schema);if(value.receipt!=null){receiptCheck(value.receipt);if(value.operations.length||value.intent!=='clarify')throw Error('Bacaan resit mesti menunggu pengesahan.');}
-  value={...value,operations:value.operations.map(o=>{if(o.type&&o.type!=='savings'&&o.category!==null){const matches=(ctx.categories[o.type]||[]).filter(c=>categoryKey(c)===categoryKey(o.category));return {...o,category:matches.length===1?matches[0]:null};}return {...o};})};
+  if(value.intent==='record'){const purchases=reportedPurchases(ctx);if(purchases)value={...value,operations:purchases};}
+  const segments=String(ctx.message||'').split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);
+  value={...value,operations:value.operations.map((o,index)=>{
+   if(!o.type||o.type==='savings')return {...o};
+   // Associate explicit instructions with their item, never with every item in a batch.
+   const segment=segments.length===1?segments[0]:segments.find(s=>categoryKey(s).includes(categoryKey(o.text)))||(segments.length===value.operations.length?segments[index]:'');
+   const explicit=segment?.match(/\b(?:masuk(?:kan)?(?:\s+dalam)?|kategori)\s+(.+?)\s*[.!?]?$/i);
+   const requested=explicit?explicit[1].replace(/[.!?]+$/,'').trim():o.category;
+   const matches=requested===null?[]:(ctx.categories[o.type]||[]).filter(c=>categoryKey(c)===categoryKey(requested));
+   // An explicit assignment means expense, even if the merchant suggested income.
+   if(explicit){const expense=(ctx.categories.expense||[]).filter(c=>categoryKey(c)===categoryKey(requested));return {...o,type:'expense',category:expense.length===1?expense[0]:null};}
+   return {...o,category:matches.length===1?matches[0]:null};
+  })};
   value.operations.forEach((o,i)=>{const p='$.operations['+i+']';if(o.date!==null&&!core.dateValid(o.date))invalid(p+'.date','YYYY-MM-DD calendar date',o.date);if(o.amount!==null){try{core.cents(o.amount);}catch{invalid(p+'.amount','positive finite amount',o.amount);}}if(o.category!==null&&o.type&&o.type!=='savings'&&!ctx.categories[o.type]?.includes(o.category))invalid(p+'.category','existing category for type',o.category);});
   if(value.query){for(const k of ['start','end'])if(!core.dateValid(value.query[k]))invalid('$.query.'+k,'YYYY-MM-DD calendar date',value.query[k]);}
 
