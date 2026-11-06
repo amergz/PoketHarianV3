@@ -24,3 +24,10 @@ services:
         value: deepseek-flash
       - key: DEEPSEEK_MAX_ATTEMPTS
         value: 1
+
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SESSION_STORE_URL
+        sync: false
+      - key: SESSION_STORE_TOKEN
+        sync: false

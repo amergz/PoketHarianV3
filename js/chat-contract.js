@@ -33,7 +33,7 @@
  // General language and dates remain the provider's job, guarded by the schema.
  function reportedPurchases(ctx){
   const parts=String(ctx.message||'').trim().split(/[,;\n]+/).map(s=>s.trim());
-  const matches=parts.map(p=>p.match(/^(7e|nasi kerabu)\s+RM\s*(\d+(?:\.\d{1,2})?)(?:\s+(?:masuk(?:kan)?(?:\s+dalam)?|kategori)\s+(.+?))?[.!]?$/i));
+  const matches=parts.map(p=>p.match(/^(7e|nasi kerabu)\s+RM\s*(\d+(?:\.\d{1,2})?)(?:\s+(?:masuk(?:kan)?(?:\s+(?:dalam|dlm))?(?:\s+(?:kategori|ketegori))?|kategori|ketegori)\s+(.+?))?[.!]?$/i));
   if(!parts.length||parts.length>10||matches.some(m=>!m))return null;
   return matches.map(m=>{const names=ctx.categories.expense||[],explicit=m[3]?.replace(/[.!]+$/,'').trim();
    const candidates=explicit?names.filter(c=>categoryKey(c)===categoryKey(explicit)):categoryKey(m[1])==='nasi kerabu'?names.filter(c=>['makan','makanan','makanan & minuman','makan & minum'].includes(categoryKey(c))):[];
@@ -42,13 +42,13 @@
  }
  function check(value,ctx){
   inspect(value,schema);if(value.receipt!=null){receiptCheck(value.receipt);if(value.operations.length||value.intent!=='clarify')throw Error('Bacaan resit mesti menunggu pengesahan.');}
-  if(value.intent==='record'){const purchases=reportedPurchases(ctx);if(purchases)value={...value,operations:purchases};}
+  if(['record','clarify'].includes(value.intent)&&!value.receipt){const purchases=reportedPurchases(ctx);if(purchases)value={...value,intent:'record',operations:purchases};}
   const segments=String(ctx.message||'').split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);
   value={...value,operations:value.operations.map((o,index)=>{
    if(!o.type||o.type==='savings')return {...o};
    // Associate explicit instructions with their item, never with every item in a batch.
    const segment=segments.length===1?segments[0]:segments.find(s=>categoryKey(s).includes(categoryKey(o.text)))||(segments.length===value.operations.length?segments[index]:'');
-   const explicit=segment?.match(/\b(?:masuk(?:kan)?(?:\s+dalam)?|kategori)\s+(.+?)\s*[.!?]?$/i);
+   const explicit=segment?.match(/\b(?:masuk(?:kan)?(?:\s+(?:dalam|dlm))?(?:\s+(?:kategori|ketegori))?|kategori|ketegori)\s+(.+?)\s*[.!?]?$/i);
    const requested=explicit?explicit[1].replace(/[.!?]+$/,'').trim():o.category;
    const matches=requested===null?[]:(ctx.categories[o.type]||[]).filter(c=>categoryKey(c)===categoryKey(requested));
    // An explicit assignment means expense, even if the merchant suggested income.
@@ -79,11 +79,22 @@
   if(value.analysis!=null){if(value.intent!=='question')invalid('$.analysis','question intent',value.analysis);validateAnalysis(value.analysis,ctx.analysisCategories||ctx.categories);}
   return {intent:value.intent,operations:ops,clarification:value.clarification,query:value.query||null,analysis:value.analysis||null,receipt:value.receipt||null};
  }
+ function pendingCategory(message,pending,categories){
+  const assignment=String(message).match(/\b(?:masuk(?:kan)?(?:\s+(?:dalam|dlm))?(?:\s+(?:kategori|ketegori))?|kategori|ketegori)\s+(.+?)\s*[.!?]?$/i);
+  if(!assignment&&(/[?]/.test(message)||/^(berapa|bila|kenapa|bagaimana|tolong|jumlah|belanja|kalau|jika)\b/i.test(message)||String(message).trim().split(/\s+/).length>4))return null;
+  let requested=assignment?assignment[1].replace(/[.!?]+$/,'').trim():message;
+  let candidates=pending.filter(p=>p.type&&p.category===null);
+  if(assignment){const prefix=String(message).slice(0,assignment.index).trim();if(prefix){const parsed=prefix.match(/^(.+?)\s+rm\s*(\d+(?:\.\d{1,2})?)$/i);if(!parsed)return null;candidates=candidates.filter(p=>categoryKey(p.text)===categoryKey(parsed[1])&&p.amount===Number(parsed[2]));}}
+  else if(candidates.length>1)candidates=candidates.slice(0,1);
+  if(!candidates.length)return null;
+  const op=candidates[0],matches=(categories[op.type]||[]).filter(c=>categoryKey(c)===categoryKey(requested));
+  return {op,requested,category:matches.length===1?matches[0]:null,ambiguous:matches.length>1};
+ }
  function prepare(op,ctx){
   const missing=[];
   if(op.amount===null)missing.push('Berapa jumlahnya?');
   if(!op.type)missing.push('Ini belanja, pendapatan atau pindahan simpanan?');
-  if(!op.category&&op.type!=='savings')missing.push('Kategori mana yang sesuai? '+(ctx.categories[op.type]||[]).join(', '));
+  if(!op.category&&op.type!=='savings')missing.push(op.type==='expense'&&op.amount!==null?'RM'+op.amount+' ini untuk kategori mana?':'Kategori mana yang sesuai? '+(ctx.categories[op.type]||[]).join(', '));
   if(!op.date)missing.push('Tarikh transaksi bila?');
   const account=ctx.accounts?.find(a=>a.alias===op.accountAlias);
   if(op.type==='savings'&&!account)missing.push('Akaun simpanan mana? '+(ctx.accounts||[]).map(a=>a.alias).join(', '));
@@ -105,5 +116,5 @@
   }
   return s;
  }
- return {receiptSchema,receiptCheck,receiptIssues,schema,analysisSchema,timeSchema,categoryKey,analysisCategories,inspect,validateAnalysis,check,prepare,undoState};
+ return {receiptSchema,receiptCheck,receiptIssues,schema,analysisSchema,timeSchema,categoryKey,analysisCategories,inspect,validateAnalysis,check,prepare,pendingCategory,undoState};
 });

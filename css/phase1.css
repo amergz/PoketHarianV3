@@ -51,3 +51,57 @@
 #chat-panel .chat-assistant .chat-post-table th,#chat-panel .chat-assistant .chat-post-table td{width:20%;padding:6px 2px;overflow-wrap:anywhere;white-space:normal;}
 #chat-panel .chat-assistant .chat-items-table th,#chat-panel .chat-assistant .chat-items-table td{width:35%;padding:6px 2px;white-space:normal;overflow-wrap:anywhere;text-align:left;}
 #chat-panel .chat-assistant .chat-items-table th:last-child,#chat-panel .chat-assistant .chat-items-table td:last-child{width:30%;text-align:right;font-variant-numeric:tabular-nums;}
+
+/* Application presentation rhythm. Root size, themes, finance and controls are unchanged. */
+#app-shell {--app-gutter:1rem;--app-card-pad:1rem;--app-section-gap:1rem;}
+#app-shell .tab-content {font-size:.875rem;line-height:1.5;padding-bottom:calc(15rem + env(safe-area-inset-bottom));}
+#app-shell .tab-content > :is(.p-6,.px-6),
+#app-shell #balance-hero {padding-left:var(--app-gutter);padding-right:var(--app-gutter);}
+#app-shell .tab-content :is(p,span,div):is(.text-base,.text-lg,.text-xl,.text-2xl,.text-3xl,.text-4xl):not(:has(input,select,textarea)):not(#home-today-balance) {font-size:.875rem;}
+#app-shell .tab-content :is(p,li) {font-size:.875rem;}
+#app-shell .tab-content :is(label,small,table),
+#app-shell .tab-content :is(.text-xs,[class*="text-[10px]"],[class*="text-[11px]"],[class*="text-[9px]"]) {font-size:.8125rem;}
+#app-shell .tab-content h3 {font-size:1rem;line-height:1.4;}
+#app-shell .tab-content h2 {font-size:1.25rem;line-height:1.4;}
+/* Higher specificity also contains the Pop theme's large page headings. */
+html[data-palette] #app-shell .tab-content h2.text-2xl {font-size:1.25rem;}
+#app-shell #home-date {font-size:1.25rem;line-height:1.4;}
+#app-shell #balance-hero h2 {font-size:2rem;justify-content:flex-end;}
+#app-shell #home-today-balance {font-size:clamp(2rem,10vw,3.25rem);font-variant-numeric:tabular-nums;}
+#app-shell #balance-hero > .text-center {text-align:left;}
+#app-shell #balance-hero h2 > span:first-child {font-size:1.25rem;}
+#app-shell #balance-hero .w-1\/2 p:first-child {text-align:left;}
+#app-shell .tab-content :is(.shadow-sleek,.neo-card):is(.p-5,.p-6) {padding:var(--app-card-pad);}
+#app-shell .tab-content :is(.mb-5,.mb-6) {margin-bottom:var(--app-section-gap);}
+#app-shell .tab-content .grid-cols-2 {grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:.75rem;}
+#app-shell .tab-content .grid-cols-2 > * {min-width:0;height:auto;}
+#app-shell .tab-content :is(h2,h3,p,label,th,td) {overflow-wrap:anywhere;}
+#app-shell .tab-content :is(.flex-1,.w-1\/2) {min-width:0;}
+#app-shell .tab-content table {width:100%;table-layout:fixed;border-collapse:collapse;font-size:.8125rem;}
+#app-shell .tab-content :is(th,td) {padding:.5rem .25rem;white-space:normal;vertical-align:top;}
+#app-shell .tab-content th:first-child {text-align:left;}
+#app-shell .tab-content :is(td,th):not(:first-child) {text-align:right;font-variant-numeric:tabular-nums;}
+#app-shell .tab-content :is(p,span):has(> [id*="total"],> [id*="balance"],> [id*="amount"],> [id*="fund"],> #home-daily-limit,> #home-spent-today) {text-align:right;font-variant-numeric:tabular-nums;}
+#app-shell :is(#home-transaction-list,#full-transaction-list) > li > .justify-end > span {text-align:right;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;font-variant-numeric:tabular-nums;}
+#app-shell .tab-content label {text-align:left;}
+#app-shell #add-modal > div {padding:1rem;max-height:90dvh;overflow-y:auto;}
+#app-shell :is(#add-modal,#savings-modal,#category-form-modal,#debt-form-modal) :is(label,small) {font-size:.8125rem;}
+#app-shell :is(#add-modal,#savings-modal,#category-form-modal,#debt-form-modal) h3 {font-size:1.125rem;}
+#app-shell :is(#add-modal,#savings-modal,#category-form-modal,#debt-form-modal) p {font-size:.875rem;}
+/* Identical right edge and 12px vertical gap, with scroll clearance above both FABs. */
+#app-shell #floating-add-btn,#floating-chat-btn {right:max(1rem,calc((100vw - 448px)/2 + 1rem));width:56px;height:56px;}
+#app-shell #floating-add-btn {bottom:calc(104px + env(safe-area-inset-bottom));}
+#floating-chat-btn {bottom:calc(172px + env(safe-area-inset-bottom));}
+#chat-panel h2 {font-size:1.25rem;}
+#chat-panel .chat-assistant {font-size:.875rem;}
+#chat-panel .chat-assistant table {font-size:.8125rem;}
+#chat-panel .chat-assistant .chat-post-table {table-layout:fixed;width:100%;min-width:0;}
+#chat-panel .chat-assistant .chat-post-table :is(th,td) {white-space:normal;overflow-wrap:anywhere;text-overflow:clip;}
+#chat-panel .chat-assistant .chat-post-table th:first-child {text-align:left;}
+#chat-panel .chat-assistant .chat-post-table :is(th,td):not(:first-child) {text-align:right;font-variant-numeric:tabular-nums;}
+@media(max-width:360px) {
+ #app-shell {--app-card-pad:.875rem;}
+ #app-shell .tab-content h2,html[data-palette] #app-shell .tab-content h2.text-2xl,#app-shell #home-date {font-size:1.125rem;}
+ #app-shell #install-app-card {flex-wrap:wrap;}
+ #app-shell #palette-settings .palette-options {grid-template-columns:repeat(2,minmax(0,1fr));}
+}
