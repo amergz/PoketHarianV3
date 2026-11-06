@@ -23,7 +23,7 @@ function validateRequest(d){
 }
 const root=fileURLToPath(new URL('../',import.meta.url));
 const port=Number(process.env.PORT||8787);
-const allowed=new Set(['index.html','manifest.json','service-worker.js','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-192.png','icon-maskable-512.png','js/phase1-core.js','js/finance-analysis.js','js/chat-contract.js','js/chat-auto.js','js/phase1-app.js','css/phase1.css']);
+const allowed=new Set(['pwa-login.js','index.html','manifest.json','service-worker.js','apple-touch-icon.png','icon-192.png','icon-512.png','icon-maskable-192.png','icon-maskable-512.png','js/phase1-core.js','js/finance-analysis.js','js/chat-contract.js','js/chat-auto.js','js/phase1-app.js','css/phase1.css']);
 const mime={'.html':'text/html; charset=utf-8','.json':'application/json','.js':'text/javascript','.css':'text/css','.png':'image/png'};
 const quotas=new Map();
 let connected=false;

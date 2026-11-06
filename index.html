@@ -479,9 +479,9 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
 .line-chart-readout { margin-top:9px; font-size:.75rem; color:var(--p-muted,#64748b); min-height:2em; }
 @media(prefers-reduced-motion:reduce) { .nav-item.active i,button:hover > i,.neo-card .fa-chart-line,.profile-settings-symbol i { animation:none!important; } }
 </style>
-<link rel="stylesheet" href="css/phase1.css?v=render-private-1"><script src="js/phase1-core.js?v=render-private-1"></script>
-<script src="js/chat-contract.js?v=render-private-1"></script>
-<script src="js/finance-analysis.js?v=render-private-1"></script>
+<link rel="stylesheet" href="css/phase1.css?v=categories-pwa-1"><script src="js/phase1-core.js?v=categories-pwa-1"></script>
+<script src="js/chat-contract.js?v=categories-pwa-1"></script>
+<script src="js/finance-analysis.js?v=categories-pwa-1"></script>
 <script>try { PoketCore.recover(localStorage); } catch(e) { alert("Pemulihan storan gagal. Jangan tambah rekod sebelum storan dipulihkan: "+e.message); throw e; }</script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased flex justify-center transition-colors duration-300">
@@ -945,6 +945,7 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
                     </button>
                     <div id="profile-settings-panel" class="profile-settings-panel" inert aria-hidden="true">
                         <div class="profile-settings-clip"><div class="profile-settings-inner">
+<button type="button" id="profile-install-pwa" class="w-full min-h-[44px] px-4 py-3 rounded-xl" onclick="installPwa()">Pasang Poket Harian</button><p id="profile-install-help" class="text-sm" hidden></p>
 <form id="owner-logout-form" action="/auth/logout" method="post"><button type="submit" class="w-full min-h-[44px] px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 font-semibold">Log keluar</button></form>
 <fieldset class="palette-settings" id="palette-settings">
 <legend>Tema Aplikasi</legend><p class="palette-help">Pilih warna kegemaran anda. Setiap tema menyokong mod cerah dan gelap.</p>
@@ -6353,12 +6354,12 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
             e.preventDefault();
             deferredInstallPrompt = e;
             const card = document.getElementById('install-app-card');
-            card.classList.remove('hidden');
-            card.classList.add('flex');
+            if(!isPwaStandalone()){card.classList.remove('hidden');card.classList.add('flex');}
         });
 
         function installPwa() {
-            if (!deferredInstallPrompt) return;
+            if (isPwaStandalone()) return;
+            if (!deferredInstallPrompt) {const help=document.getElementById('profile-install-help');help.hidden=false;help.textContent='Android (Chrome): menu ? ? Pasang aplikasi / Tambah ke skrin utama. iPhone (Safari): Kongsi ? Tambah ke Skrin Utama ? Tambah.';return;}
             deferredInstallPrompt.prompt();
             deferredInstallPrompt.userChoice.then(() => {
                 deferredInstallPrompt = null;
@@ -6376,6 +6377,10 @@ canvas[data-interactive-line]:focus-visible { outline:2px solid var(--p-accent,#
             deferredInstallPrompt = null;
         });
 
+        function isPwaStandalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;}
+        function updateInstallVisibility(){document.getElementById('profile-install-pwa').hidden=isPwaStandalone();if(isPwaStandalone()){document.getElementById('install-app-card').classList.add('hidden');document.getElementById('profile-install-help').hidden=true;}}
+        window.matchMedia('(display-mode: standalone)').addEventListener('change',updateInstallVisibility);
+        window.addEventListener('appinstalled',updateInstallVisibility);updateInstallVisibility();
         // Init
         applyWeeklyTrendUiState(); // guna semula saiz kad yang disimpan pengguna (sebelum carta pertama dilukis)
         applySavingsTrendUiState();
@@ -6491,9 +6496,9 @@ new MutationObserver(syncCompactThemeSwitch).observe(document.documentElement,{a
  <p id="chat-status" role="status" aria-live="polite"></p>
  <button type="button" id="chat-retry" hidden>Cuba semula</button><button type="button" id="chat-cancel-request" hidden>Tutup permintaan gagal</button></div>
 </section>
-<script src="js/phase1-app.js?v=render-private-1"></script>
+<script src="js/phase1-app.js?v=categories-pwa-1"></script>
 
-<script src="js/chat-auto.js?v=render-private-1"></script>
+<script src="js/chat-auto.js?v=categories-pwa-1"></script>
 
 </body>
 </html>

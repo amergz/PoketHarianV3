@@ -31,6 +31,7 @@
 
  function check(value,ctx){
   inspect(value,schema);if(value.receipt!=null){receiptCheck(value.receipt);if(value.operations.length||value.intent!=='clarify')throw Error('Bacaan resit mesti menunggu pengesahan.');}
+  value={...value,operations:value.operations.map(o=>{if(o.type&&o.type!=='savings'&&o.category!==null){const matches=(ctx.categories[o.type]||[]).filter(c=>categoryKey(c)===categoryKey(o.category));return {...o,category:matches.length===1?matches[0]:null};}return {...o};})};
   value.operations.forEach((o,i)=>{const p='$.operations['+i+']';if(o.date!==null&&!core.dateValid(o.date))invalid(p+'.date','YYYY-MM-DD calendar date',o.date);if(o.amount!==null){try{core.cents(o.amount);}catch{invalid(p+'.amount','positive finite amount',o.amount);}}if(o.category!==null&&o.type&&o.type!=='savings'&&!ctx.categories[o.type]?.includes(o.category))invalid(p+'.category','existing category for type',o.category);});
   if(value.query){for(const k of ['start','end'])if(!core.dateValid(value.query[k]))invalid('$.query.'+k,'YYYY-MM-DD calendar date',value.query[k]);}
 
